@@ -1,0 +1,79 @@
+From 2dc838ebd8a717571cc43e3ace8c83ad03947631 Mon Sep 17 00:00:00 2001
+From: Valentin Raevsky <valentin@compulab.co.il>
+Date: Fri, 13 Sep 2024 08:40:18 +0300
+Subject: [PATCH] basler-camera-driver: Fix Linux Kernel 6.y build issue
+
+Signed-off-by: Valentin Raevsky <valentin@compulab.co.il>
+---
+ basler-camera-driver/basler-camera-driver.c | 21 +++++++--------------
+ 1 file changed, 7 insertions(+), 14 deletions(-)
+
+diff --git a/basler-camera-driver/basler-camera-driver.c b/basler-camera-driver/basler-camera-driver.c
+index 83947fd..e9bd7e9 100644
+--- a/basler-camera-driver/basler-camera-driver.c
++++ b/basler-camera-driver/basler-camera-driver.c
+@@ -63,13 +63,10 @@ static int basler_read_register_chunk(struct i2c_client *client, u8 *buffer,
+ 
+ static int basler_camera_s_ctrl(struct v4l2_ctrl *ctrl);
+ static int basler_camera_g_volatile_ctrl(struct v4l2_ctrl *ctrl);
+-static int basler_camera_validate(const struct v4l2_ctrl *ctrl, u32 idx,
+-				  union v4l2_ctrl_ptr ptr);
++static int basler_camera_validate(const struct v4l2_ctrl *ctrl, union v4l2_ctrl_ptr ptr);
+ static void basler_camera_init(const struct v4l2_ctrl *ctrl, u32 idx,
+ 			       union v4l2_ctrl_ptr ptr);
+-static bool basler_camera_equal(const struct v4l2_ctrl *ctrl, u32 idx,
+-				union v4l2_ctrl_ptr ptr1,
+-				union v4l2_ctrl_ptr ptr2);
++static bool basler_camera_equal(const struct v4l2_ctrl *ctrl, union v4l2_ctrl_ptr ptr1, union v4l2_ctrl_ptr ptr2);
+ 
+ struct basler_camera_dev {
+ 	struct i2c_client *i2c_client;
+@@ -750,8 +747,7 @@ static const struct v4l2_ctrl_type_ops basler_camera_ctrl_type_ops = {
+  *
+  * Returns always zero
+  */
+-static int basler_camera_validate(const struct v4l2_ctrl *ctrl, u32 idx,
+-				  union v4l2_ctrl_ptr ptr)
++static int basler_camera_validate(const struct v4l2_ctrl *ctrl, union v4l2_ctrl_ptr ptr)
+ {
+ 	return 0;
+ }
+@@ -774,9 +770,7 @@ static void basler_camera_init(const struct v4l2_ctrl *ctrl, u32 idx,
+  *
+  * Returns always zero
+  */
+-static bool basler_camera_equal(const struct v4l2_ctrl *ctrl, u32 idx,
+-				union v4l2_ctrl_ptr ptr1,
+-				union v4l2_ctrl_ptr ptr2)
++static bool basler_camera_equal(const struct v4l2_ctrl *ctrl, union v4l2_ctrl_ptr ptr1, union v4l2_ctrl_ptr ptr2)
+ {
+ 	return 0;
+ }
+@@ -1028,8 +1022,7 @@ static int basler_camera_init_controls(struct basler_camera_dev *sensor)
+ 	return 0;
+ }
+ 
+-static int basler_camera_probe(struct i2c_client *client,
+-			       const struct i2c_device_id *id)
++static int basler_camera_probe(struct i2c_client *client)
+ {
+ 	struct device *dev = &client->dev;
+ 	struct basler_camera_dev *sensor;
+@@ -1133,7 +1126,7 @@ reg_off:
+ 	return ret;
+ }
+ 
+-static int basler_camera_remove(struct i2c_client *client)
++static void basler_camera_remove(struct i2c_client *client)
+ {
+ 	struct v4l2_subdev *sd = i2c_get_clientdata(client);
+ 	struct basler_camera_dev *sensor = to_basler_camera_dev(sd);
+@@ -1148,7 +1141,7 @@ static int basler_camera_remove(struct i2c_client *client)
+ 		regulator_disable(sensor->vdd);
+ 	}
+ 
+-	return 0;
++	return;
+ }
+ 
+ static const struct i2c_device_id basler_camera_id[] = {

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+
+  <remote fetch="https://github.com/basler" name="basler"/>
+
+  <project name="meta-basler-tools" remote="basler" revision="kirkstone" path="sources/meta-basler-tools"/>
+  <project name="meta-basler-imx8" remote="basler" revision="kirkstone-5.15.71-2.2.0" path="sources/meta-basler-imx8"/>
+
+</manifest>

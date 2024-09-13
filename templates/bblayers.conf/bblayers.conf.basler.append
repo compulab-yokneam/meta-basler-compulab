@@ -1,0 +1,3 @@
+BBLAYERS += "${BSPDIR}/sources/meta-basler-imx8"
+BBLAYERS += "${BSPDIR}/sources/meta-basler-tools"
+BBLAYERS += "${BSPDIR}/sources/meta-basler-compulab"
